@@ -1175,7 +1175,7 @@ CSSPixelRect FormattingContext::content_box_rect_in_static_position_ancestor_coo
     auto rect = content_box_rect(box);
     if (&box == &ancestor_box)
         return rect;
-    for (auto const* current = box.static_position_containing_block(); current; current = current->static_position_containing_block()) {
+    for (auto const* current = box.static_position_containing_block(ancestor_box); current; current = current->static_position_containing_block(ancestor_box)) {
         if (current == &ancestor_box)
             return rect;
         auto const& current_state = m_state.get(*current);

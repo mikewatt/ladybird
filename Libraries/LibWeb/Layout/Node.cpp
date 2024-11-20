@@ -86,9 +86,12 @@ bool Node::can_contain_boxes_with_position_absolute() const
     return false;
 }
 
-static Box const* nearest_ancestor_capable_of_forming_a_containing_block(Node const& node)
+static Box const* nearest_ancestor_capable_of_forming_a_containing_block(Node const& node, Optional<Box const&> bound = {})
 {
     for (auto const* ancestor = node.parent(); ancestor; ancestor = ancestor->parent()) {
+        if (bound.has_value() && &bound.value() == ancestor)
+            return verify_cast<Box>(ancestor);
+
         if (ancestor->is_block_container()
             || ancestor->display().is_flex_inside()
             || ancestor->display().is_grid_inside()
@@ -122,9 +125,9 @@ Box const* Node::containing_block() const
     return nearest_ancestor_capable_of_forming_a_containing_block(*this);
 }
 
-Box const* Node::static_position_containing_block() const
+Box const* Node::static_position_containing_block(Optional<Box const&> bound) const
 {
-    return nearest_ancestor_capable_of_forming_a_containing_block(*this);
+    return nearest_ancestor_capable_of_forming_a_containing_block(*this, bound);
 }
 
 Box const* Node::non_anonymous_containing_block() const
